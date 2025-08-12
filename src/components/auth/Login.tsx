@@ -46,7 +46,7 @@ const Login: React.FC = () => {
 
   // Demo credentials helper
   const fillDemoCredentials = () => {
-    setEmail('sarah.johnson@email.com');
+    setEmail('sarah.jacobs@email.com');
     setPassword('password123');
   };
 
@@ -65,16 +65,17 @@ const Login: React.FC = () => {
       
       if (emailExists) {
         setForgotPasswordSuccess(true);
+        // Show success message for longer and provide better feedback
         setTimeout(() => {
           setShowForgotPassword(false);
           setForgotPasswordEmail('');
           setForgotPasswordSuccess(false);
-        }, 3000);
+        }, 5000);
       } else {
-        setError('Email not found. Please check your email address.');
+        setError('Email not found. Please check your email address or try a different email.');
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError('An error occurred. Please try again later.');
     } finally {
       setForgotPasswordLoading(false);
     }
@@ -100,8 +101,11 @@ const Login: React.FC = () => {
             </svg>
           </motion.div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-            Doctor Ecosystem
+            IHCE
           </h2>
+          <p className="mt-2 text-center text-lg font-semibold text-medical-accent">
+            Integrated Health Care Ecosystem
+          </p>
           <p className="mt-2 text-center text-sm text-gray-600">
             Sign in to your account
           </p>
@@ -221,10 +225,10 @@ const Login: React.FC = () => {
               onClick={fillDemoCredentials}
               className="text-sm text-blue-600 hover:text-blue-800 underline"
             >
-              Use demo account (Dr. Sarah Johnson)
+              Use demo account (Dr. Sarah Jacobs)
             </button>
             <p className="text-xs text-blue-600 mt-1">
-              Email: sarah.johnson@email.com | Password: password123
+              Email: sarah.jacobs@email.com | Password: password123
             </p>
           </div>
 
@@ -315,6 +319,18 @@ const Login: React.FC = () => {
                     </motion.div>
                   )}
 
+                  {/* Demo credentials for testing */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <p className="text-xs text-gray-600 mb-2">
+                      <strong>Demo Emails for Testing:</strong>
+                    </p>
+                    <div className="text-xs text-gray-500 space-y-1">
+                      <div>• sarah.jacobs@email.com (Dr. Sarah Jacobs)</div>
+                      <div>• michael.naidoo@email.com (Dr. Michael Naidoo)</div>
+                      <div>• ayesha.khan@email.com (Dr. Ayesha Khan)</div>
+                    </div>
+                  </div>
+
                   <div className="flex space-x-3">
                     <button
                       type="button"
@@ -344,7 +360,7 @@ const Login: React.FC = () => {
 
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <p className="text-xs text-blue-800">
-                      <strong>Demo:</strong> Try with any email from our mock data (e.g., sarah.johnson@email.com)
+                      <strong>Demo:</strong> Try with any email from our mock data (e.g., sarah.jacobs@email.com)
                     </p>
                   </div>
                 </form>
