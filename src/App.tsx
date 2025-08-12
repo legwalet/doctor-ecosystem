@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
@@ -11,6 +11,8 @@ import './App.css';
 
 // Landing Page Component
 const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-medical-light via-white to-blue-50">
       <div className="container mx-auto px-4 py-16">
@@ -82,13 +84,13 @@ const LandingPage: React.FC = () => {
             className="space-x-6"
           >
             <button
-              onClick={() => window.location.href = '/login'}
+              onClick={() => navigate('/login')}
               className="btn-primary text-lg px-8 py-4"
             >
               Get Started
             </button>
             <button
-              onClick={() => window.location.href = '/register'}
+              onClick={() => navigate('/register')}
               className="btn-secondary text-lg px-8 py-4"
             >
               Join Network
