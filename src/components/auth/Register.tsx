@@ -328,7 +328,7 @@ const Register: React.FC = () => {
                       type="password"
                       className="input-field"
                       placeholder="••••••••"
-                      value={formData.password}
+                      value={formData.confirmPassword}
                       onChange={(e) => updateFormData('confirmPassword', e.target.value)}
                     />
                   </div>
