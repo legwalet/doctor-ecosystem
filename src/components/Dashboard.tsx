@@ -514,7 +514,7 @@ const Dashboard: React.FC = () => {
     { id: 'network', label: 'Network', icon: <NetworkIcon /> },
     { 
       id: 'inbox', 
-      label: `Inbox${pendingReferrals.length > 0 ? ` (${pendingReferrals.length})` : ''}`, 
+      label: 'Inbox', 
       icon: <InboxIcon />,
       hasNotification: pendingReferrals.length > 0
     },
@@ -583,16 +583,34 @@ const Dashboard: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`relative flex items-center space-x-2 px-3 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                className={`relative flex items-center space-x-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 whitespace-nowrap ${
                   activeTab === item.id
-                    ? 'bg-medical-primary text-white'
-                    : 'text-medical-gray hover:text-medical-primary hover:bg-gray-100'
+                    ? 'bg-medical-primary text-white shadow-md'
+                    : item.hasNotification 
+                      ? 'text-medical-primary hover:text-medical-secondary hover:bg-green-50 border-2 border-green-300 shadow-md bg-green-25'
+                      : 'text-medical-gray hover:text-medical-primary hover:bg-gray-100'
                 }`}
               >
-                {item.icon}
+                <div className={`${item.hasNotification ? 'animate-pulse' : ''}`}>
+                  {item.icon}
+                </div>
                 <span>{item.label}</span>
                 {item.hasNotification && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  <div className="relative">
+                    {/* Enhanced notification indicator with multiple layers */}
+                    {/* Outer glow ring */}
+                    <div className="absolute -top-3 -right-3 w-6 h-6 bg-green-200 rounded-full animate-pulse opacity-60"></div>
+                    {/* Main notification dot */}
+                    <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-200"></div>
+                    {/* Animated ping effect */}
+                    <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full animate-ping"></div>
+                    {/* Notification count badge with gradient */}
+                    <div className="absolute -top-4 -right-4 w-6 h-6 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg shadow-red-200 transform hover:scale-110 transition-all duration-200 border-2 border-white">
+                      <span className="text-xs font-bold text-white">{pendingReferrals.length}</span>
+                    </div>
+                    {/* Subtle sparkle effect */}
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full animate-pulse opacity-80"></div>
+                  </div>
                 )}
               </button>
             ))}
