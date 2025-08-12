@@ -30,6 +30,7 @@ interface FormData {
   clinicAddress: string;
   clinicContact: string;
   profilePicture: string;
+  profilePictureFile?: File;
   coordinates: [number, number];
   
   // Hospital-specific fields
@@ -43,7 +44,13 @@ interface FormData {
   certifications: string[];
   services: string[];
   consultationFee: string;
-  workingHours: string;
+  workingHours: {
+    monday: { enabled: boolean; start: string; end: string };
+    tuesday: { enabled: boolean; start: string; end: string };
+    wednesday: { enabled: boolean; start: string; end: string };
+    thursday: { enabled: boolean; start: string; end: string };
+    friday: { enabled: boolean; start: string; end: string };
+  };
   languages: string[];
   description: string;
 }
@@ -79,7 +86,13 @@ const Register: React.FC = () => {
     certifications: [],
     services: [],
     consultationFee: '',
-    workingHours: '',
+    workingHours: {
+      monday: { enabled: false, start: '09:00', end: '17:00' },
+      tuesday: { enabled: false, start: '09:00', end: '17:00' },
+      wednesday: { enabled: false, start: '09:00', end: '17:00' },
+      thursday: { enabled: false, start: '09:00', end: '17:00' },
+      friday: { enabled: false, start: '09:00', end: '17:00' }
+    },
     languages: [],
     description: ''
   });
@@ -138,9 +151,30 @@ const Register: React.FC = () => {
     try {
       // Remove password fields from professional data
       const { password, confirmPassword, ...professionalData } = formData;
-      const success = await register({ ...professionalData, password });
-      if (success) {
-        navigate('/dashboard');
+      
+      // Convert working hours to string format for compatibility
+      if (professionalData.professionType === 'wellness') {
+        const workingHoursString = Object.entries(professionalData.workingHours)
+          .filter(([_, hours]) => hours.enabled)
+          .map(([day, hours]) => `${day.charAt(0).toUpperCase() + day.slice(1)} ${hours.start}-${hours.end}`)
+          .join(', ');
+        
+        const finalData = { ...professionalData, workingHours: workingHoursString };
+        const success = await register({ ...finalData, password });
+        if (success) {
+          navigate('/dashboard');
+        }
+        return;
+      }
+      
+      // For hospital professionals, convert workingHours to string if it exists
+      if (professionalData.professionType === 'hospital') {
+        const finalData = { ...professionalData, workingHours: '' };
+        const success = await register({ ...finalData, password });
+        if (success) {
+          navigate('/dashboard');
+        }
+        return;
       }
     } catch (error) {
       console.error('Registration failed:', error);
@@ -174,7 +208,7 @@ const Register: React.FC = () => {
         if (formData.professionType === 'hospital') {
           return formData.profilePicture;
         } else {
-          return formData.certifications.length > 0 && formData.workingHours && formData.description;
+          return formData.certifications.length > 0 && Object.values(formData.workingHours).some(day => day.enabled) && formData.description;
         }
       case 7:
         if (formData.professionType === 'hospital') {
@@ -690,13 +724,50 @@ const Register: React.FC = () => {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <input
-                        type="text"
-                        className="input-field"
-                        placeholder="Profile picture URL"
-                        value={formData.profilePicture}
-                        onChange={(e) => updateFormData('profilePicture', e.target.value)}
-                      />
+                      
+                      {/* Image Upload Section */}
+                      <div className="space-y-4">
+                        <div className="flex flex-col items-center space-y-2">
+                          <label htmlFor="profile-upload-hospital" className="cursor-pointer">
+                            <div className="px-4 py-2 bg-medical-primary text-white rounded-lg hover:bg-medical-secondary transition-colors duration-200">
+                              📷 Upload New Photo
+                            </div>
+                          </label>
+                          <input
+                            id="profile-upload-hospital"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                  const result = e.target?.result as string;
+                                  updateFormData('profilePicture', result);
+                                  updateFormData('profilePictureFile', file);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <p className="text-xs text-gray-500">Click to upload your profile picture</p>
+                        </div>
+                        
+                        {/* URL Input as fallback */}
+                        <div className="w-full">
+                          <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            Or enter image URL:
+                          </label>
+                          <input
+                            type="text"
+                            className="input-field"
+                            placeholder="https://example.com/image.jpg"
+                            value={formData.profilePicture}
+                            onChange={(e) => updateFormData('profilePicture', e.target.value)}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -725,13 +796,48 @@ const Register: React.FC = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Working Hours
                         </label>
-                        <input
-                          type="text"
-                          className="input-field"
-                          placeholder="e.g., Mon-Fri 9AM-6PM, Sat 9AM-2PM"
-                          value={formData.workingHours}
-                          onChange={(e) => updateFormData('workingHours', e.target.value)}
-                        />
+                        <div className="space-y-3">
+                          {Object.entries(formData.workingHours).map(([day, hours]) => (
+                            <div key={day} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                              <input
+                                type="checkbox"
+                                id={`${day}-enabled`}
+                                checked={hours.enabled}
+                                onChange={(e) => updateFormData('workingHours', {
+                                  ...formData.workingHours,
+                                  [day]: { ...hours, enabled: e.target.checked }
+                                })}
+                                className="w-4 h-4 text-medical-primary border-gray-300 rounded focus:ring-medical-primary"
+                              />
+                              <label htmlFor={`${day}-enabled`} className="flex-1 font-medium text-gray-700 capitalize">
+                                {day}
+                              </label>
+                              {hours.enabled && (
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="time"
+                                    value={hours.start}
+                                    onChange={(e) => updateFormData('workingHours', {
+                                      ...formData.workingHours,
+                                      [day]: { ...hours, start: e.target.value }
+                                    })}
+                                    className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-medical-primary focus:border-transparent"
+                                  />
+                                  <span className="text-gray-500">to</span>
+                                  <input
+                                    type="time"
+                                    value={hours.end}
+                                    onChange={(e) => updateFormData('workingHours', {
+                                      ...formData.workingHours,
+                                      [day]: { ...hours, end: e.target.value }
+                                    })}
+                                    className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-medical-primary focus:border-transparent"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
                       <div>
@@ -836,13 +942,50 @@ const Register: React.FC = () => {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <input
-                        type="text"
-                        className="input-field"
-                        placeholder="Profile picture URL"
-                        value={formData.profilePicture}
-                        onChange={(e) => updateFormData('profilePicture', e.target.value)}
-                      />
+                      
+                      {/* Image Upload Section */}
+                      <div className="space-y-4">
+                        <div className="flex flex-col items-center space-y-2">
+                          <label htmlFor="profile-upload-wellness" className="cursor-pointer">
+                            <div className="px-4 py-2 bg-medical-primary text-white rounded-lg hover:bg-medical-secondary transition-colors duration-200">
+                              📷 Upload New Photo
+                            </div>
+                          </label>
+                          <input
+                            id="profile-upload-wellness"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                  const result = e.target?.result as string;
+                                  updateFormData('profilePicture', result);
+                                  updateFormData('profilePictureFile', file);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <p className="text-xs text-gray-500">Click to upload your profile picture</p>
+                        </div>
+                        
+                        {/* URL Input as fallback */}
+                        <div className="w-full">
+                          <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            Or enter image URL:
+                          </label>
+                          <input
+                            type="text"
+                            className="input-field"
+                            placeholder="https://example.com/image.jpg"
+                            value={formData.profilePicture}
+                            onChange={(e) => updateFormData('profilePicture', e.target.value)}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
