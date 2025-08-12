@@ -265,7 +265,8 @@ const Register: React.FC = () => {
       >
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Join Healthcare Ecosystem</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Join IHCE</h2>
+          <p className="text-xl font-semibold text-medical-accent mb-2">Integrated Health Care Ecosystem</p>
           <p className="mt-2 text-sm text-gray-600">Create your professional account</p>
         </div>
 

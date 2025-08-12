@@ -343,7 +343,7 @@ const MapView: React.FC<{
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <div className="mb-4">
-          <h3 className="text-xl font-semibold text-medical-primary mb-2">Cape Town Healthcare Network Map</h3>
+          <h3 className="text-xl font-semibold text-medical-primary mb-2">Cape Town IHCE Network Map</h3>
           
 
           
@@ -583,7 +583,8 @@ const NetworkTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-medical-primary">Doctor Network - Cape Town</h2>
+          <h2 className="text-2xl font-bold text-medical-primary">IHCE Network - Cape Town</h2>
+          <p className="text-lg text-medical-accent">Integrated Health Care Ecosystem</p>
           <p className="text-medical-gray">Connect with healthcare professionals in your area</p>
         </div>
         

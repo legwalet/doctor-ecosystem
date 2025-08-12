@@ -23,8 +23,11 @@ const LandingPage: React.FC = () => {
           className="text-center max-w-4xl mx-auto"
         >
           <h1 className="text-6xl font-bold text-medical-primary mb-6">
-            Doctor Ecosystem
+            IHCE
           </h1>
+          <p className="text-2xl font-semibold text-medical-accent mb-2">
+            Integrated Health Care Ecosystem
+          </p>
           <p className="text-xl text-medical-gray mb-12 leading-relaxed">
             A comprehensive healthcare management platform connecting doctors, 
             managing patients, and streamlining medical consultations.
