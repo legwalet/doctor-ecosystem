@@ -1,6 +1,8 @@
-# Getting Started with Create React App
+# Integrated Health Ecosystem
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A comprehensive medical management platform for healthcare professionals, providing seamless patient care coordination, doctor communication, and medical practice management.
+
+This project was built with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
